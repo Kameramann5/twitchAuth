@@ -22,41 +22,27 @@ export default function TwitchLogin() {
 const [loggedIn, setLoggedIn] = useState(false);
 const [username, setUsername] = useState('');
 const [error, setError] = useState(null);
-const getValidAccessToken = async () => {
-  // Здесь можно добавить логику проверки срока жизни токена,
-  // либо просто пробовать обновить токен при ошибке 401
-  let token = await AsyncStorage.getItem('accessToken');
-  // Например, если токен отсутствует или истёк — обновляем
-  if (!token) {
-    token = await refreshToken();
-  }
-  return token;
-};
+
 const fetchUserInfo = async (token) => {
-  try {
-    const response = await fetch('https://api.twitch.tv/helix/users', {
-      headers: {
-        'Client-ID': CLIENT_ID,
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Ошибка API: ${response.status}`);
-    }
-
-    const data = await response.json();
-    if (data.data && data.data.length > 0) {
-      const userLogin = data.data[0].login;
-      setUsername(userLogin);
-      setLoggedIn(true);
-      await AsyncStorage.setItem('twitch_username', userLogin);
-    } else {
-      setError('Не удалось получить данные пользователя');
-    }
-  } catch (err) {
-    setError(err.message);
-  }
+try {
+const response = await fetch('https://api.twitch.tv/helix/users', {
+headers: {
+'Client-ID': CLIENT_ID,
+Authorization: Bearer ${token},
+},
+});
+const data = await response.json();
+if (data.data && data.data.length > 0) {
+const userLogin = data.data[0].login;
+setUsername(userLogin);
+setLoggedIn(true);
+await AsyncStorage.setItem('twitch_username', userLogin);
+} else {
+setError('Не удалось получить данные пользователя');
+}
+} catch (err) {
+setError(err.message);
+}
 };
 
 useEffect(() => {
@@ -70,35 +56,13 @@ setLoggedIn(true);
 }, []);
 
 const handleLogin = async () => {
-  try {
-    const result = await authorize(config);
-    const refreshToken = async () => {
-      try {
-        const storedRefreshToken = await AsyncStorage.getItem('refreshToken');
-        if (!storedRefreshToken) throw new Error('Нет refresh токена');
-    
-        const newAuthState = await refresh(config, {
-          refreshToken: storedRefreshToken,
-        });
-    
-        await AsyncStorage.setItem('accessToken', newAuthState.accessToken);
-        if (newAuthState.refreshToken) {
-          await AsyncStorage.setItem('refreshToken', newAuthState.refreshToken);
-        }
-    
-        return newAuthState.accessToken;
-      } catch (err) {
-        console.log('Ошибка обновления токена:', err);
-        throw err;
-      }
-    };
-    await AsyncStorage.setItem('accessToken', result.accessToken);
-    await AsyncStorage.setItem('refreshToken', result.refreshToken);
-    await fetchUserInfo(result.accessToken);
-  } catch (err) {
-    console.log('Ошибка авторизации:', err);
-    Alert.alert('Ошибка', 'Не удалось авторизоваться через Twitch');
-  }
+try {
+const result = await authorize(config);
+await fetchUserInfo(result.accessToken);
+} catch (err) {
+console.log('Ошибка авторизации:', err);
+Alert.alert('Ошибка', 'Не удалось авторизоваться через Twitch');
+}
 };
 
 const handleLogout = async () => {
