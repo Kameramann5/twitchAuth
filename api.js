@@ -2,10 +2,10 @@ import axios from 'axios';
 
 // Введите свои ключи и токены сюда
 const CLIENT_ID = 'ciicbxp57ut6cvt2lh4s9b817v8bzt';
-const CLIENT_SECRET = '';
+const CLIENT_SECRET = 'x025qx3ftdlx0hvf7zqywcs8j2dhk6';
 
-let ACCESS_TOKEN = '';
-let REFRESH_TOKEN = '';
+let ACCESS_TOKEN = 'k4o442mznei502mf7k50af2akm1qxm';
+let REFRESH_TOKEN = '98720ev8c297gy8kgab40sw663425w2xy0jjywpsi2t0jimrll';
 
 // Создаем axios-инстанс
 const api = axios.create({
